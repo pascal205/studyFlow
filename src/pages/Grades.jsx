@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Badge, EmptyState, Icon, ProgressRing } from '../components/ui'
 import { formatAverage, gradeOn20, mention, mentionTone } from '../lib/grades'
 import { formatNumericDate } from '../lib/utils'
+import { useAverageReveal } from '../lib/useAverageReveal'
 import { useDerived } from '../store/derived'
 
 export function Grades({ onAddGrade, onEditGrade }) {
@@ -45,6 +46,7 @@ export function Grades({ onAddGrade, onEditGrade }) {
   const best = ranked[0] ?? null
   const worst = ranked[ranked.length - 1] ?? null
   const goal = settings.goal || 14
+  const average = useAverageReveal()
 
   const handleDelete = (grade) => {
     if (window.confirm(`Supprimer la note « ${grade.title} » ?`)) actions.deleteGrade(grade.id)
@@ -66,29 +68,72 @@ export function Grades({ onAddGrade, onEditGrade }) {
       </header>
 
       <div className="grades-top">
-        <section className="card average-card">
+        <section className={`card average-card ${average.revealed ? '' : 'average-card--locked'}`}>
           <div className="average-card__main">
             <ProgressRing
-              value={generalAverage == null ? 0 : (generalAverage / 20) * 100}
+              value={average.revealed && generalAverage != null ? (generalAverage / 20) * 100 : 0}
               size={148}
               stroke={12}
               color="var(--primary)"
-              label={generalAverage == null ? '—' : formatAverage(generalAverage)}
-              sublabel="moyenne /20"
+              label={
+                average.revealed
+                  ? generalAverage == null
+                    ? '—'
+                    : formatAverage(generalAverage)
+                  : average.calculating
+                    ? '…'
+                    : '?'
+              }
+              sublabel={
+                average.revealed ? 'moyenne /20' : average.calculating ? 'calcul en cours' : 'moyenne masquée'
+              }
             />
             <div>
               <span className="eyebrow">Moyenne générale</span>
-              <h2 className="average-card__value">
-                {generalAverage == null ? 'Pas encore de note' : `${formatAverage(generalAverage)} / 20`}
-              </h2>
-              <Badge tone={mentionTone(generalAverage)}>{mention(generalAverage)}</Badge>
-              <p className="average-card__hint">
-                {generalAverage == null
-                  ? 'Ajoute ta première note pour suivre ta progression.'
-                  : generalAverage >= goal
-                    ? `Objectif atteint : tu es ${formatAverage(generalAverage - goal)} point(s) au-dessus de ta cible.`
-                    : `Il te manque ${formatAverage(goal - generalAverage)} point(s) pour atteindre ton objectif de ${goal}/20.`}
-              </p>
+              {average.revealed ? (
+                <>
+                  <h2 className="average-card__value">
+                    {generalAverage == null ? 'Pas encore de note' : `${formatAverage(generalAverage)} / 20`}
+                  </h2>
+                  <Badge tone={mentionTone(generalAverage)}>{mention(generalAverage)}</Badge>
+                  <p className="average-card__hint">
+                    {generalAverage == null
+                      ? 'Ajoute ta première note pour suivre ta progression.'
+                      : generalAverage >= goal
+                        ? `Objectif atteint : tu es ${formatAverage(generalAverage - goal)} point(s) au-dessus de ta cible.`
+                        : `Il te manque ${formatAverage(goal - generalAverage)} point(s) pour atteindre ton objectif de ${goal}/20.`}
+                  </p>
+                  <button type="button" className="link average-card__hide" onClick={average.hide}>
+                    <Icon name="eyeOff" size={13} /> Masquer ma moyenne
+                  </button>
+                </>
+              ) : average.calculating ? (
+                <>
+                  <h2 className="average-card__value">Calcul en cours…</h2>
+                  <p className="average-card__hint">
+                    Addition des notes pondérées par matière et par coefficient…
+                  </p>
+                  <span className="calculating-bar" aria-hidden="true">
+                    <span />
+                  </span>
+                </>
+              ) : (
+                <>
+                  <h2 className="average-card__value">Moyenne masquée</h2>
+                  <p className="average-card__hint">
+                    C’est toi qui décides du moment où tu veux connaître ta moyenne générale. Elle reste calculée
+                    en arrière-plan, matière par matière.
+                  </p>
+                  <button
+                    type="button"
+                    className="btn btn--primary btn--sm"
+                    onClick={average.reveal}
+                    disabled={generalAverage == null}
+                  >
+                    <Icon name="eye" size={16} /> Révéler ma moyenne
+                  </button>
+                </>
+              )}
             </div>
           </div>
           <div className="average-card__side">

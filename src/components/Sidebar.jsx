@@ -52,8 +52,8 @@ export function Sidebar({ page, onNavigate, counts, generalAverage, settings, on
             <small>{settings.className || 'Ma scolarité'}</small>
           </span>
           <span className="profile-card__avg">
-            {generalAverage == null ? '—' : `${formatAverage(generalAverage)}`}
-            <small>/20</small>
+            {settings.revealAverage && generalAverage != null ? formatAverage(generalAverage) : '—'}
+            <small>{settings.revealAverage ? '/20' : 'masquée'}</small>
           </span>
         </button>
         <p className="sidebar__tip">

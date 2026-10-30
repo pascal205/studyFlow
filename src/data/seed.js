@@ -156,5 +156,6 @@ export const seedState = () => ({
     startTime: '17:00',
     theme: 'light',
     goal: 14,
+    revealAverage: false,
   },
 })

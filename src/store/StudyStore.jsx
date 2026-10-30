@@ -1,25 +1,19 @@
 import { createContext, useContext, useEffect, useMemo, useReducer } from 'react'
-import { seedState } from '../data/seed'
+import { demoState, emptyState, loadUserState, persistTheme, saveUserState } from '../lib/storage'
 import { uid } from '../lib/utils'
 
-const STORAGE_KEY = 'studyflow.state.v1'
 const StudyContext = createContext(null)
 
-const baseState = () => ({ ...seedState(), version: 1 })
+const baseState = () => emptyState()
 
-const loadState = () => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return baseState()
-    const parsed = JSON.parse(raw)
-    if (!parsed || !Array.isArray(parsed.subjects)) return baseState()
-    return {
-      ...baseState(),
-      ...parsed,
-      settings: { ...baseState().settings, ...(parsed.settings || {}) },
-    }
-  } catch {
-    return baseState()
+const loadState = (userId) => {
+  const defaults = baseState()
+  const saved = loadUserState(userId)
+  if (!saved) return defaults
+  return {
+    ...defaults,
+    ...saved,
+    settings: { ...defaults.settings, ...(saved.settings || {}) },
   }
 }
 
@@ -113,8 +107,10 @@ function reducer(state, action) {
         ...action.payload,
         settings: { ...baseState().settings, ...(action.payload.settings || {}) },
       }
-    case 'data/reset':
-      return baseState()
+    case 'data/reset': {
+      const demo = demoState(state.settings.studentName)
+      return { ...demo, settings: { ...demo.settings, ...state.settings } }
+    }
     case 'data/clear':
       return {
         subjects: [],
@@ -128,19 +124,16 @@ function reducer(state, action) {
   }
 }
 
-export function StudyProvider({ children }) {
-  const [state, dispatch] = useReducer(reducer, undefined, loadState)
+export function StudyProvider({ userId, children }) {
+  const [state, dispatch] = useReducer(reducer, userId, loadState)
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
-    } catch {
-      /* stockage indisponible : l'app continue en mémoire */
-    }
-  }, [state])
+    if (userId) saveUserState(userId, state)
+  }, [userId, state])
 
   useEffect(() => {
     document.documentElement.dataset.theme = state.settings.theme
+    persistTheme(state.settings.theme)
   }, [state.settings.theme])
 
   const actions = useMemo(

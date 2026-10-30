@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useDerived } from '../store/derived'
 import { Badge, Icon, ProgressRing } from '../components/ui'
 import { buildCoachAdvice, methodForTask } from '../lib/coach'
+import { useAverageReveal } from '../lib/useAverageReveal'
 import { formatAverage, mention } from '../lib/grades'
 import { typeInfo } from '../lib/priority'
 import { addDays, dueLabel, formatLongDate, hoursToLabel, minutesToLabel, todayISO } from '../lib/utils'
@@ -29,7 +30,8 @@ export function Dashboard({ onNavigate, onNewTask, onEditTask }) {
   const nextTask = sortedOpen[0] ?? null
   const todayPlan = todayTasks.length ? todayTasks : weekTasks.slice(0, 3)
   const todayPlanMinutes = todayPlan.reduce((sum, task) => sum + task.estimatedMinutes, 0)
-  const goalGap = generalAverage != null ? settings.goal - generalAverage : null
+  const average = useAverageReveal()
+  const goalGap = average.revealed && average.average != null ? settings.goal - average.average : null
 
   return (
     <div className="page">
@@ -81,9 +83,33 @@ export function Dashboard({ onNavigate, onNewTask, onEditTask }) {
           icon="grades"
           tone="violet"
           label="Moyenne générale"
-          value={generalAverage == null ? '—' : `${formatAverage(generalAverage)}`}
-          hint={generalAverage == null ? 'Ajoute tes notes' : mention(generalAverage)}
-          suffix="/20"
+          value={
+            average.revealed ? (
+              average.average == null ? (
+                '—'
+              ) : (
+                <>
+                  {formatAverage(average.average)}
+                  <small>/20</small>
+                </>
+              )
+            ) : average.calculating ? (
+              <span className="calc-value">
+                Calcul<span className="calc-dots" />
+              </span>
+            ) : (
+              <button type="button" className="reveal-inline" onClick={average.reveal}>
+                <Icon name="eye" size={14} /> Révéler
+              </button>
+            )
+          }
+          hint={
+            average.revealed
+              ? mention(average.average)
+              : average.calculating
+                ? 'Calcul en cours…'
+                : 'Masquée jusqu’à ton choix'
+          }
         />
       </section>
 
@@ -307,7 +333,7 @@ export function Dashboard({ onNavigate, onNewTask, onEditTask }) {
               <p>
                 {completionRate}% de tes travaux sont terminés. Objectif de moyenne&nbsp;:{' '}
                 {settings.goal}/20{' '}
-                {goalGap != null && (
+                {goalGap != null && average.revealed && (
                   <strong className={goalGap <= 0 ? 'text-success' : ''}>
                     {goalGap <= 0
                       ? '— objectif atteint 🎉'

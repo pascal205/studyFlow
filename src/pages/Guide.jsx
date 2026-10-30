@@ -131,8 +131,10 @@ export function Guide({ onNavigate, onEditTask }) {
           </ol>
           <div className="guide-actions__footer">
             <div>
-              <strong>{formatAverage(generalAverage)}/20</strong>
-              <span>moyenne actuelle</span>
+              <strong>
+                {settings.revealAverage && generalAverage != null ? `${formatAverage(generalAverage)}/20` : '—'}
+              </strong>
+              <span>{settings.revealAverage ? 'moyenne actuelle' : 'moyenne non révélée'}</span>
             </div>
             <div>
               <strong>{sortedOpen.length}</strong>
