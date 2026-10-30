@@ -1,0 +1,20 @@
+{
+  "name": "studyflow",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "StudyFlow — organise tes devoirs, interrogations et notes, avec un coach d'organisation intégré.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.11"
+  }
+}
