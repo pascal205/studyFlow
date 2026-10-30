@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useReducer } from 'react'
-import { demoState, emptyState, loadUserState, persistTheme, saveUserState } from '../lib/storage'
+import { emptyState, isLegacyDemoState, loadUserState, persistTheme, saveUserState } from '../lib/storage'
 import { uid } from '../lib/utils'
 
 const StudyContext = createContext(null)
@@ -10,10 +10,17 @@ const loadState = (userId) => {
   const defaults = baseState()
   const saved = loadUserState(userId)
   if (!saved) return defaults
+
+  // Anciens espaces restés sur les données de démonstration : on repart à zéro.
+  if (isLegacyDemoState(saved)) {
+    return emptyState(saved.settings?.studentName || 'Élève', saved.settings || {})
+  }
+
   return {
     ...defaults,
     ...saved,
     settings: { ...defaults.settings, ...(saved.settings || {}) },
+    version: 2,
   }
 }
 
@@ -108,17 +115,10 @@ function reducer(state, action) {
         settings: { ...baseState().settings, ...(action.payload.settings || {}) },
       }
     case 'data/reset': {
-      const demo = demoState(state.settings.studentName)
-      return { ...demo, settings: { ...demo.settings, ...state.settings } }
+      // Retour à un espace vierge : matières par défaut, sans travaux ni notes.
+      const clean = emptyState(state.settings.studentName || 'Élève')
+      return { ...clean, settings: { ...clean.settings, ...state.settings } }
     }
-    case 'data/clear':
-      return {
-        subjects: [],
-        tasks: [],
-        grades: [],
-        settings: { ...state.settings },
-        version: 1,
-      }
     default:
       return state
   }
@@ -151,7 +151,6 @@ export function StudyProvider({ userId, children }) {
       updateSettings: (payload) => dispatch({ type: 'settings/update', payload }),
       importData: (payload) => dispatch({ type: 'data/import', payload }),
       resetData: () => dispatch({ type: 'data/reset' }),
-      clearData: () => dispatch({ type: 'data/clear' }),
     }),
     [],
   )

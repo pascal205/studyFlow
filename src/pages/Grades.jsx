@@ -61,7 +61,7 @@ export function Grades({ onAddGrade, onEditGrade }) {
           <p className="subtitle">Moyennes pondérées par coefficient de matière et par évaluation.</p>
         </div>
         <div className="page-header__actions">
-          <button type="button" className="btn btn--primary" onClick={onAddGrade}>
+          <button type="button" className="btn btn--primary" onClick={() => onAddGrade()}>
             <Icon name="plus" size={18} /> Ajouter une note
           </button>
         </div>
@@ -121,8 +121,9 @@ export function Grades({ onAddGrade, onEditGrade }) {
                 <>
                   <h2 className="average-card__value">Moyenne masquée</h2>
                   <p className="average-card__hint">
-                    C’est toi qui décides du moment où tu veux connaître ta moyenne générale. Elle reste calculée
-                    en arrière-plan, matière par matière.
+                    {generalAverage == null
+                      ? 'Ajoute ta première note : ta moyenne sera calculée ici, puis restera masquée tant que tu ne choisiras pas de la révéler.'
+                      : 'C’est toi qui décides du moment où tu veux connaître ta moyenne générale. Elle reste calculée en arrière-plan, matière par matière.'}
                   </p>
                   <button
                     type="button"
@@ -295,7 +296,7 @@ export function Grades({ onAddGrade, onEditGrade }) {
             title="Aucune note pour l’instant"
             description="Ajoute tes évaluations pour visualiser ta moyenne générale et repérer les matières à consolider."
             action={
-              <button type="button" className="btn btn--primary" onClick={onAddGrade}>
+              <button type="button" className="btn btn--primary" onClick={() => onAddGrade()}>
                 <Icon name="plus" size={18} /> Ajouter une note
               </button>
             }

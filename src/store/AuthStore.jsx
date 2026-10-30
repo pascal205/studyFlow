@@ -11,7 +11,7 @@ import {
   updateUserPassword,
   verifyPassword,
 } from '../lib/auth'
-import { clearUserState, initialUserState, saveUserState } from '../lib/storage'
+import { clearUserState, emptyState, saveUserState } from '../lib/storage'
 
 const AuthContext = createContext(null)
 
@@ -22,9 +22,10 @@ export function AuthProvider({ children }) {
     return loadUsers().find((record) => record.id === session.userId) ?? null
   })
 
-  const register = useCallback(async ({ name, email, password, withDemo = true }) => {
-    const record = await createUser({ name, email, password, withDemo })
-    saveUserState(record.id, initialUserState(record.name, withDemo))
+  const register = useCallback(async ({ name, email, password }) => {
+    const record = await createUser({ name, email, password })
+    // Nouvel espace vierge : matières par défaut, aucun travail, aucune note.
+    saveUserState(record.id, emptyState(record.name))
     saveSession(record.id, true)
     setUser(record)
     return record

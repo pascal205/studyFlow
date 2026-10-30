@@ -40,11 +40,13 @@ export function Dashboard({ onNavigate, onNewTask, onEditTask }) {
           <p className="eyebrow">{formatLongDate(todayISO())}</p>
           <h1>Bonjour {settings.studentName} 👋</h1>
           <p className="subtitle">
-            {sortedOpen.length === 0
-              ? 'Aucun travail en attente : profite-en pour consolider une matière.'
-              : `${sortedOpen.length} travail${sortedOpen.length > 1 ? 'x' : ''} en cours · ${hoursToLabel(
-                  weekMinutes,
-                )} estimées cette semaine.`}
+            {data.tasks.length === 0
+              ? 'Ton espace est vierge : ajoute ton premier devoir ou une interrogation pour commencer.'
+              : sortedOpen.length === 0
+                ? 'Aucun travail en attente : profite-en pour consolider une matière.'
+                : `${sortedOpen.length} travail${sortedOpen.length > 1 ? 'x' : ''} en cours · ${hoursToLabel(
+                    weekMinutes,
+                  )} estimées cette semaine.`}
           </p>
         </div>
         <div className="page-header__actions">
@@ -84,15 +86,13 @@ export function Dashboard({ onNavigate, onNewTask, onEditTask }) {
           tone="violet"
           label="Moyenne générale"
           value={
-            average.revealed ? (
-              average.average == null ? (
-                '—'
-              ) : (
-                <>
-                  {formatAverage(average.average)}
-                  <small>/20</small>
-                </>
-              )
+            average.average == null ? (
+              '—'
+            ) : average.revealed ? (
+              <>
+                {formatAverage(average.average)}
+                <small>/20</small>
+              </>
             ) : average.calculating ? (
               <span className="calc-value">
                 Calcul<span className="calc-dots" />
@@ -104,11 +104,13 @@ export function Dashboard({ onNavigate, onNewTask, onEditTask }) {
             )
           }
           hint={
-            average.revealed
-              ? mention(average.average)
-              : average.calculating
-                ? 'Calcul en cours…'
-                : 'Masquée jusqu’à ton choix'
+            average.average == null
+              ? 'Ajoute tes notes'
+              : average.revealed
+                ? mention(average.average)
+                : average.calculating
+                  ? 'Calcul en cours…'
+                  : 'Masquée jusqu’à ton choix'
           }
         />
       </section>
@@ -177,12 +179,15 @@ export function Dashboard({ onNavigate, onNewTask, onEditTask }) {
           ) : (
             <div className="hero hero--empty">
               <div>
-                <h3>Tout est fait 🎉</h3>
+                <h3>{data.tasks.length ? 'Tout est fait 🎉' : 'Bienvenue dans StudyFlow'}</h3>
                 <p className="hero__why">
-                  Ajoute un prochain travail ou révise 20 minutes la matière où ta moyenne est la plus fragile.
+                  {data.tasks.length
+                    ? 'Ajoute un prochain travail ou révise 20 minutes la matière où ta moyenne est la plus fragile.'
+                    : 'Commence par ajouter ton premier devoir ou ta première interrogation. Tes matières par défaut (Mathématiques, Français, Anglais) sont déjà prêtes — tu pourras en ajouter d’autres à tout moment.'}
                 </p>
                 <button type="button" className="btn btn--primary" onClick={onNewTask}>
-                  <Icon name="plus" size={18} /> Ajouter un travail
+                  <Icon name="plus" size={18} />{' '}
+                  {data.tasks.length ? 'Ajouter un travail' : 'Ajouter mon premier travail'}
                 </button>
               </div>
             </div>
@@ -238,7 +243,13 @@ export function Dashboard({ onNavigate, onNewTask, onEditTask }) {
                 </span>
               </button>
             ))}
-            {sortedOpen.length === 0 && <p className="muted">Aucune priorité : tout est sous contrôle.</p>}
+            {sortedOpen.length === 0 && (
+              <p className="muted">
+                {data.tasks.length === 0
+                  ? 'Aucun travail pour l’instant : ajoute ton premier devoir pour voir apparaître tes priorités.'
+                  : 'Aucune priorité : tout est sous contrôle.'}
+              </p>
+            )}
           </div>
         </section>
 
@@ -331,7 +342,10 @@ export function Dashboard({ onNavigate, onNewTask, onEditTask }) {
             <div>
               <h3>Progression de la semaine</h3>
               <p>
-                {completionRate}% de tes travaux sont terminés. Objectif de moyenne&nbsp;:{' '}
+                {data.tasks.length === 0
+                  ? 'Ajoute tes premiers travaux pour suivre ta progression.'
+                  : `${completionRate}% de tes travaux sont terminés.`}{' '}
+                Objectif de moyenne&nbsp;:{' '}
                 {settings.goal}/20{' '}
                 {goalGap != null && average.revealed && (
                   <strong className={goalGap <= 0 ? 'text-success' : ''}>

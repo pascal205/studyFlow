@@ -53,7 +53,9 @@ export function Sidebar({ page, onNavigate, counts, generalAverage, settings, on
           </span>
           <span className="profile-card__avg">
             {settings.revealAverage && generalAverage != null ? formatAverage(generalAverage) : '—'}
-            <small>{settings.revealAverage ? '/20' : 'masquée'}</small>
+            <small>
+              {generalAverage == null ? 'aucune note' : settings.revealAverage ? '/20' : 'masquée'}
+            </small>
           </span>
         </button>
         <p className="sidebar__tip">

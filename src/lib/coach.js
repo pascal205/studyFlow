@@ -72,6 +72,25 @@ export const workloadWithin = (tasks = [], days = 7) =>
  * Génère des conseils d'organisation personnalisés, du plus urgent au plus général.
  */
 export function buildCoachAdvice({ tasks = [], subjectStats = [], generalAverage = null }) {
+  if (!tasks.length) {
+    return [
+      {
+        id: 'welcome',
+        tone: 'info',
+        title: 'Ton espace est prêt',
+        message:
+          'Ajoute ton premier devoir ou ta première interrogation : StudyFlow calculera sa priorité et construira ton planning. Tes matières par défaut sont déjà en place.',
+      },
+      {
+        id: 'welcome-grades',
+        tone: 'success',
+        title: 'Ajoute tes notes au fur et à mesure',
+        message:
+          'Dès ta première évaluation, tu verras ta moyenne par matière. La moyenne générale, elle, reste masquée jusqu’à ce que tu choisisses de la révéler.',
+      },
+    ]
+  }
+
   const advice = []
   const open = tasks.filter((task) => task.status !== 'done')
   const overdue = open.filter((task) => task.priority.days < 0)

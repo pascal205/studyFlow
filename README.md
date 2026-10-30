@@ -13,6 +13,7 @@ L'application classe automatiquement les travaux par **priorité d'apprentissage
 - Mots de passe dérivés avec **PBKDF2-SHA256** (210 000 itérations, sel aléatoire) : aucun mot de passe en clair n'est stocké.
 - Session persistante avec expiration (« rester connecté » 30 jours, sinon 12 h).
 - **Un espace de données isolé par compte** : deux élèves sur le même appareil ne voient pas leurs travaux respectifs.
+- **Nouveau compte = espace vierge** : seules trois matières par défaut (Mathématiques, Français, Anglais) sont créées — aucun devoir, aucune note, aucune statistique inventée. L'élève ajoute ensuite ses propres données.
 - Changement de mot de passe et suppression définitive du compte (avec confirmation par mot de passe).
 - Tout fonctionne hors ligne, sur `localhost` comme en HTTPS.
 
@@ -51,6 +52,9 @@ L'application classe automatiquement les travaux par **priorité d'apprentissage
 - Plan d'action personnalisé.
 - Explication du calcul de priorité.
 - Méthode en 4 étapes et techniques d'apprentissage (rappel actif, répétition espacée, Pomodoro, Feynman…).
+
+### Réinitialiser son espace
+- Depuis **Réglages → Réinitialiser mon espace** : efface travaux, notes et matières, puis restaure les matières par défaut, tout en conservant le compte et les préférences.
 
 ### Sauvegardes intégrées au profil
 - Création de **sauvegardes nommées directement dans l'espace profil** (aucun fichier à retrouver sur l'ordinateur).
@@ -114,7 +118,7 @@ public/
 └─ icons/                 # icônes installables (192, 512, maskable, Apple)
 src/
 ├─ components/            # UI partagée, formulaires, réglages
-├─ data/seed.js           # données de démonstration (dates relatives)
+├─ data/seed.js           # matières par défaut et réglages initiaux
 ├─ lib/                   # priorités, moyennes, planning, coach, auth, sauvegardes
 ├─ pages/                 # AuthScreen, Dashboard, Tasks, Planning, Grades, Subjects, Guide
 ├─ store/                 # AuthStore (comptes) + StudyStore (données par compte)

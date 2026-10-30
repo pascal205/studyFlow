@@ -81,7 +81,7 @@ const saveUsers = (users) => {
 export const findUserByEmail = (email) =>
   loadUsers().find((user) => normalizeEmail(user.email) === normalizeEmail(email)) || null
 
-export const createUser = async ({ name, email, password, withDemo = true }) => {
+export const createUser = async ({ name, email, password }) => {
   const users = loadUsers()
   const normalized = normalizeEmail(email)
   if (users.some((user) => normalizeEmail(user.email) === normalized)) {
@@ -92,7 +92,6 @@ export const createUser = async ({ name, email, password, withDemo = true }) => 
     id: `u_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
     name: name.trim(),
     email: normalized,
-    withDemo: Boolean(withDemo),
     createdAt: new Date().toISOString(),
     password: credentials,
   }

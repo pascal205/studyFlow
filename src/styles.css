@@ -3740,6 +3740,25 @@ a {
   color: var(--danger);
 }
 
+.auth__hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 9px 11px;
+  border-radius: 10px;
+  border: 1px dashed var(--border);
+  background: var(--surface-2);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.auth__hint .icon {
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
 /* ==========================================================================
    Auth & réglages : responsive
    ========================================================================== */

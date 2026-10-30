@@ -25,6 +25,7 @@ export function SettingsModal({ open, onClose }) {
   const [deletePassword, setDeletePassword] = useState('')
   const [deleteError, setDeleteError] = useState('')
   const [deleteBusy, setDeleteBusy] = useState(false)
+  const [resetOpen, setResetOpen] = useState(false)
 
   useEffect(() => {
     if (!open) return
@@ -39,6 +40,7 @@ export function SettingsModal({ open, onClose }) {
     setDeleteOpen(false)
     setDeletePassword('')
     setDeleteError('')
+    setResetOpen(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
@@ -442,33 +444,42 @@ export function SettingsModal({ open, onClose }) {
           </div>
         </section>
 
-        {/* --------------------------------------------------------- Danger */}
+        {/* --------------------------------------------------- Réinitialisation */}
         <section className="settings-section">
           <h3 className="settings-section__title">
-            <Icon name="alert" size={16} /> Données de démonstration
+            <Icon name="refresh" size={16} /> Réinitialiser mon espace
           </h3>
-          <div className="settings-danger">
-            <button
-              type="button"
-              className="btn btn--ghost btn--sm"
-              onClick={() => {
-                actions.resetData()
-                setMessage('Données de démonstration restaurées.')
-              }}
-            >
-              <Icon name="refresh" size={16} /> Restaurer l’exemple
-            </button>
-            <button
-              type="button"
-              className="btn btn--ghost btn--sm btn--danger-text"
-              onClick={() => {
-                actions.clearData()
-                setMessage('Toutes les données ont été effacées de ton espace.')
-              }}
-            >
-              <Icon name="trash" size={16} /> Tout effacer
-            </button>
-          </div>
+          <p className="settings-section__hint">
+            Efface tes travaux, tes notes et tes matières, puis restaure les matières par défaut (Mathématiques,
+            Français, Anglais). Ton compte et tes préférences sont conservés.
+          </p>
+          {resetOpen ? (
+            <div className="delete-form">
+              <p>Cette action supprime définitivement les travaux et notes de cet espace. Confirmer ?</p>
+              <div className="form__actions">
+                <button type="button" className="btn btn--ghost btn--sm" onClick={() => setResetOpen(false)}>
+                  Annuler
+                </button>
+                <button
+                  type="button"
+                  className="btn btn--danger btn--sm"
+                  onClick={() => {
+                    actions.resetData()
+                    setResetOpen(false)
+                    setMessage('Espace réinitialisé : matières par défaut restaurées, travaux et notes effacés.')
+                  }}
+                >
+                  Confirmer la réinitialisation
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="settings-danger">
+              <button type="button" className="btn btn--ghost btn--sm" onClick={() => setResetOpen(true)}>
+                <Icon name="refresh" size={16} /> Réinitialiser mes données
+              </button>
+            </div>
+          )}
         </section>
 
         {message && <p className="form__notice">{message}</p>}

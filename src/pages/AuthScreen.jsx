@@ -14,7 +14,6 @@ export function AuthScreen() {
     password: '',
     confirm: '',
     remember: true,
-    withDemo: true,
   })
   const [error, setError] = useState('')
   const [pending, setPending] = useState(false)
@@ -49,7 +48,6 @@ export function AuthScreen() {
           name: form.name,
           email: form.email,
           password: form.password,
-          withDemo: form.withDemo,
         })
       } else {
         await login({ email: form.email, password: form.password, remember: form.remember })
@@ -118,7 +116,7 @@ export function AuthScreen() {
             <p>
               {mode === 'login'
                 ? 'Connecte-toi pour retrouver tes travaux, ton planning et tes notes.'
-                : 'Un compte local, propre à cet appareil, pour repartir de zéro ou avec un exemple.'}
+                : 'Un compte local, propre à cet appareil. Ton espace démarre vierge, avec tes matières par défaut.'}
             </p>
           </header>
 
@@ -212,14 +210,10 @@ export function AuthScreen() {
                 <span>Rester connecté sur cet appareil</span>
               </label>
             ) : (
-              <label className="checkbox">
-                <input
-                  type="checkbox"
-                  checked={form.withDemo}
-                  onChange={(event) => update('withDemo', event.target.checked)}
-                />
-                <span>Préremplir avec des données d’exemple (matières, devoirs, notes)</span>
-              </label>
+              <p className="auth__hint">
+                <Icon name="book" size={14} /> Mathématiques, Français et Anglais seront créés comme matières de départ —
+                à toi d’ajouter tes devoirs et tes notes.
+              </p>
             )}
 
             {error && <p className="form__error">{error}</p>}
