@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Badge, EmptyState, Icon, ProgressRing } from '../components/ui'
+import { ExportMenu } from '../components/ExportMenu'
+import { buildGradeExportModel } from '../lib/gradeExport'
 import { formatAverage, gradeOn20, mention, mentionTone } from '../lib/grades'
 import { formatNumericDate } from '../lib/utils'
 import { useAverageReveal } from '../lib/useAverageReveal'
@@ -47,6 +49,10 @@ export function Grades({ onAddGrade, onEditGrade }) {
   const worst = ranked[ranked.length - 1] ?? null
   const goal = settings.goal || 14
   const average = useAverageReveal()
+  const exportModel = useMemo(
+    () => buildGradeExportModel({ settings, stats, generalAverage }),
+    [settings, stats, generalAverage],
+  )
 
   const handleDelete = (grade) => {
     if (window.confirm(`Supprimer la note « ${grade.title} » ?`)) actions.deleteGrade(grade.id)
@@ -61,6 +67,7 @@ export function Grades({ onAddGrade, onEditGrade }) {
           <p className="subtitle">Moyennes pondérées par coefficient de matière et par évaluation.</p>
         </div>
         <div className="page-header__actions">
+          <ExportMenu model={exportModel} />
           <button type="button" className="btn btn--primary" onClick={() => onAddGrade()}>
             <Icon name="plus" size={18} /> Ajouter une note
           </button>

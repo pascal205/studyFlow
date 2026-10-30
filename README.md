@@ -45,6 +45,14 @@ L'application classe automatiquement les travaux par **priorité d'apprentissage
 - Moyenne par matière, moyenne générale pondérée (à la demande), mentions, objectif, meilleure matière / matière à consolider.
 - Tableau filtrable et triable, ajout / modification / suppression.
 
+### Export du tableau de notes
+- Bouton **Exporter** dans la page Notes : **Excel (.xlsx)**, **Word (.docx)** ou **PDF**.
+- Mise en page soignée : en-tête StudyFlow, élève/classe, synthèse par matière, détail des évaluations groupé par matière.
+- **Excel et Word sont modifiables** : chaque matière dispose de **2 lignes vides** pour ajouter des notes à la main, corriger un intitulé ou compléter le tableau.
+- **PDF prêt à imprimer** (non modifiable), avec les mêmes lignes vides pour l'écriture manuscrite.
+- La **moyenne générale n'est exportée que si l'élève a choisi de la révéler** ; sinon le document indique « non révélée ». Les moyennes par matière restent incluses.
+- Les bibliothèques d'export sont chargées à la demande : le démarrage de l'application reste léger, et l'export fonctionne aussi hors ligne après la première visite.
+
 ### Matières
 - Coefficients, professeurs, couleur, moyenne, charge à venir, prochain travail.
 
@@ -104,6 +112,7 @@ Le dossier `dist/` est prêt à être déployé tel quel (Vercel, Netlify, GitHu
 - **React 18**
 - **Vite 5** (+ plugin maison d'injection des assets dans le service worker)
 - CSS moderne (variables, `color-mix`, grid, responsive) — aucune dépendance UI
+- **write-excel-file** (Excel), **docx** (Word), **jsPDF + autoTable** (PDF), chargés dynamiquement
 - Aucun backend : persistance via `localStorage`
 - Web Crypto API pour l'authentification
 

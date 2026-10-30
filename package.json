@@ -10,8 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "docx": "^9.15.0",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.9",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "write-excel-file": "^4.1.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
