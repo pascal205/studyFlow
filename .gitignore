@@ -1,6 +1,8 @@
 node_modules
 dist
 dist-ssr
+.wrangler
+login*.log
 *.local
 .env
 .env.*

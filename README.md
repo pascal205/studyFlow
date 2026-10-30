@@ -78,6 +78,18 @@ L'application classe automatiquement les travaux par **priorité d'apprentissage
 
 ---
 
+## ☁️ Déploiement Cloudflare Pages
+
+- **En ligne :** https://studyflow-qag.pages.dev
+- Projet Cloudflare Pages : `studyflow` (compte `Pascalametepe04@gmail.com`), branche de production `main`.
+- Redéployer après une modification :
+
+```bash
+npm run deploy
+```
+
+La commande compile l'application puis envoie `dist/` sur Cloudflare Pages. L'installation PWA et le service worker fonctionnent automatiquement en HTTPS.
+
 ## 🚀 Démarrage
 
 ```bash
