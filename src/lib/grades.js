@@ -18,7 +18,7 @@ export const mention = (average) => {
   if (average == null) return 'Pas encore de note'
   if (average >= 18) return 'Excellent'
   if (average >= 16) return 'Très bien'
-  if (average >= 14) return 'Bien'
+  if (average >= 15) return 'Bien'
   if (average >= 12) return 'Assez bien'
   if (average >= 10) return 'Passable'
   return 'Fragile'
