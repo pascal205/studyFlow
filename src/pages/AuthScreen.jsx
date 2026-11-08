@@ -148,7 +148,7 @@ export function AuthScreen() {
                 <input
                   type="text"
                   autoComplete="name"
-                  placeholder="Ex. Pascal Ametêpé"
+                  placeholder="Ex. Marie Dupont"
                   value={form.name}
                   onChange={(event) => update('name', event.target.value)}
                 />
