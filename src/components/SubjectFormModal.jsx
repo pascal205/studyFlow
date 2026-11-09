@@ -36,7 +36,7 @@ export function SubjectFormModal({ open, onClose, onSubmit, initial }) {
           <input
             autoFocus
             type="text"
-            placeholder="Ex. Sciences économiques"
+            placeholder="Ex. Sciences économiques et sociales"
             value={form.name}
             onChange={(event) => update('name', event.target.value)}
           />

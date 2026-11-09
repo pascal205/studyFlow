@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Badge, Icon, Modal } from './ui'
 import { useStudy } from '../store/StudyStore'
 import { useAuth } from '../store/AuthStore'
@@ -15,6 +15,7 @@ export function SettingsModal({ open, onClose }) {
   const [backups, setBackups] = useState([])
   const [backupLabel, setBackupLabel] = useState('')
   const [restoreTarget, setRestoreTarget] = useState(null)
+  const importInputRef = useRef(null)
 
   const [passwordOpen, setPasswordOpen] = useState(false)
   const [passwordForm, setPasswordForm] = useState({ current: '', next: '', confirm: '' })
@@ -94,6 +95,67 @@ export function SettingsModal({ open, onClose }) {
     refreshBackups()
     if (restoreTarget?.id === backup.id) setRestoreTarget(null)
     setMessage('Sauvegarde supprimée.')
+  }
+
+  const handleExportData = () => {
+    const exportFile = {
+      format: 'studyflow-data',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      data: { subjects, tasks, grades, settings },
+    }
+    const blob = new Blob([JSON.stringify(exportFile, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `studyflow-donnees-${new Date().toISOString().slice(0, 10)}.json`
+    link.click()
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000)
+    setMessage('Fichier de transfert téléchargé. Conservez-le pour l’importer sur votre autre appareil.')
+  }
+
+  const handleImportData = async (event) => {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+
+    try {
+      const imported = JSON.parse(await file.text())
+      const data = imported?.data
+      const isRecord = (value) => value !== null && typeof value === 'object' && !Array.isArray(value)
+      const validRecords = (items, requiredFields) =>
+        Array.isArray(items) && items.every((item) => isRecord(item) && requiredFields.every((field) => item[field]))
+
+      if (
+        imported.format !== 'studyflow-data' ||
+        imported.version !== 1 ||
+        !isRecord(data) ||
+        !validRecords(data.subjects, ['id', 'name']) ||
+        !validRecords(data.tasks, ['id', 'title']) ||
+        !validRecords(data.grades, ['id', 'title']) ||
+        !isRecord(data.settings)
+      ) {
+        throw new Error('Ce fichier ne contient pas une exportation StudyFlow valide.')
+      }
+
+      const counts = `${data.subjects.length} matière(s), ${data.grades.length} note(s) et ${data.tasks.length} tâche(s)`
+      if (!window.confirm(`Importer ${counts} ? Les données actuelles de ce compte seront remplacées.`)) return
+
+      if (user) {
+        try {
+          createBackup(user.id, { subjects, tasks, grades, settings }, 'Avant importation')
+          refreshBackups()
+        } catch {
+          // L'importation reste disponible si l'espace de sauvegarde local est plein.
+        }
+      }
+
+      actions.importData({ ...data, version: 2 })
+      if (user && data.settings.studentName) updateProfileName(data.settings.studentName)
+      setMessage(`Importation terminée : ${counts}.`)
+    } catch (error) {
+      setMessage(error instanceof SyntaxError ? 'Le fichier sélectionné est illisible.' : error.message)
+    }
   }
 
   /* ---------------------------------------------------------------- Compte */
@@ -335,6 +397,38 @@ export function SettingsModal({ open, onClose }) {
         </section>
 
         {/* ------------------------------------------------------ Sauvegardes */}
+        <section className="settings-section">
+          <h3 className="settings-section__title">
+            <Icon name="archive" size={16} /> Transférer mes données
+          </h3>
+          <p className="settings-section__hint">
+            Téléchargez un fichier contenant vos matières, tâches, notes et préférences, puis importez-le sur un autre appareil ou compte.
+            L’importation remplace les données du compte ouvert.
+          </p>
+          <div className="settings-io">
+            <div>
+              <h4>Fichier de transfert StudyFlow</h4>
+              <p>Le fichier JSON inclut vos matières, notes, tâches et préférences.</p>
+            </div>
+            <div className="settings-io__actions">
+              <button type="button" className="btn btn--ghost btn--sm" onClick={handleExportData}>
+                <Icon name="download" size={15} /> Exporter
+              </button>
+              <button type="button" className="btn btn--primary btn--sm" onClick={() => importInputRef.current?.click()}>
+                <Icon name="upload" size={15} /> Importer
+              </button>
+              <input
+                ref={importInputRef}
+                type="file"
+                accept=".json,application/json"
+                onChange={handleImportData}
+                hidden
+              />
+            </div>
+          </div>
+          {message && <p className="settings-section__hint" role="status">{message}</p>}
+        </section>
+
         <section className="settings-section">
           <h3 className="settings-section__title">
             <Icon name="archive" size={16} /> Mes sauvegardes

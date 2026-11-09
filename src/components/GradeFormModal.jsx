@@ -71,7 +71,7 @@ export function GradeFormModal({ open, onClose, onSubmit, subjects, initial, def
           <input
             autoFocus
             type="text"
-            placeholder="Ex. DS n°3 — probabilités"
+            placeholder="Ex. Devoir surveillé n° 3 — probabilités"
             value={form.title}
             onChange={(event) => update('title', event.target.value)}
           />
