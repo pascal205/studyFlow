@@ -171,7 +171,7 @@ export function AuthScreen() {
               <input
                 type="password"
                 autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                placeholder={mode === 'login' ? 'Ton mot de passe' : '8 caractères minimum'}
+                placeholder={mode === 'login' ? 'Saisissez votre mot de passe' : '8 caractères minimum'}
                 value={form.password}
                 onChange={(event) => update('password', event.target.value)}
               />
@@ -193,7 +193,7 @@ export function AuthScreen() {
                 <input
                   type="password"
                   autoComplete="new-password"
-                  placeholder="Retape ton mot de passe"
+                  placeholder="Confirmez votre mot de passe"
                   value={form.confirm}
                   onChange={(event) => update('confirm', event.target.value)}
                 />

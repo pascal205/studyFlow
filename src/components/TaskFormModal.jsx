@@ -61,7 +61,7 @@ export function TaskFormModal({ open, onClose, onSubmit, subjects, initial, defa
           <input
             autoFocus
             type="text"
-            placeholder="Ex. Exercices p. 84, révision chapitre 3…"
+            placeholder="Ex. Exercices page 84, révision du chapitre 3"
             value={form.title}
             onChange={(event) => update('title', event.target.value)}
           />
@@ -148,7 +148,7 @@ export function TaskFormModal({ open, onClose, onSubmit, subjects, initial, defa
           <span className="field__label">Notes / consignes (optionnel)</span>
           <textarea
             rows="3"
-            placeholder="Pages, chapitres, documents à rendre…"
+            placeholder="Précisez les pages, chapitres ou documents concernés"
             value={form.notes}
             onChange={(event) => update('notes', event.target.value)}
           />
