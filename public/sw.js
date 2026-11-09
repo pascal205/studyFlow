@@ -30,6 +30,16 @@ self.addEventListener('activate', (event) => {
   )
 })
 
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+      const appClient = clients.find((client) => 'focus' in client)
+      return appClient ? appClient.focus() : self.clients.openWindow('./')
+    }),
+  )
+})
+
 const saveCopy = (request, response) => {
   if (!response || !response.ok) return
   const copy = response.clone()

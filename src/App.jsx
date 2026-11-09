@@ -13,10 +13,15 @@ import { Subjects } from './pages/Subjects'
 import { Guide } from './pages/Guide'
 import { useDerived } from './store/derived'
 import { formatLongDate, todayISO } from './lib/utils'
+import { useTaskReminders } from './lib/useTaskReminders'
+import { useAuth } from './store/AuthStore'
 
 export default function App() {
   const data = useDerived()
   const { settings, actions, openTasks, todayTasks, subjects } = data
+  const { user } = useAuth()
+
+  useTaskReminders({ tasks: data.tasks, enabled: settings.taskRemindersEnabled, userId: user?.id })
 
   const [page, setPage] = useState('dashboard')
   const [taskModal, setTaskModal] = useState({ open: false, task: null })

@@ -27,6 +27,9 @@ export function SettingsModal({ open, onClose }) {
   const [deleteError, setDeleteError] = useState('')
   const [deleteBusy, setDeleteBusy] = useState(false)
   const [resetOpen, setResetOpen] = useState(false)
+  const [notificationPermission, setNotificationPermission] = useState(() =>
+    'Notification' in window ? Notification.permission : 'unsupported',
+  )
 
   useEffect(() => {
     if (!open) return
@@ -95,6 +98,25 @@ export function SettingsModal({ open, onClose }) {
     refreshBackups()
     if (restoreTarget?.id === backup.id) setRestoreTarget(null)
     setMessage('Sauvegarde supprimée.')
+  }
+
+  const handleEnableTaskReminders = async () => {
+    if (!('Notification' in window)) {
+      setMessage('Les notifications ne sont pas prises en charge par ce navigateur.')
+      return
+    }
+    try {
+      const permission = Notification.permission === 'default' ? await Notification.requestPermission() : Notification.permission
+      setNotificationPermission(permission)
+      if (permission === 'granted') {
+        actions.updateSettings({ taskRemindersEnabled: true })
+        setMessage('Rappels activés : les tâches du jour seront signalées à 9 h.')
+      } else {
+        setMessage('Autorisez les notifications de StudyFlow dans les réglages de votre navigateur.')
+      }
+    } catch {
+      setMessage('Impossible d’activer les notifications dans ce navigateur ou sur cette connexion.')
+    }
   }
 
   const handleExportData = () => {
@@ -397,6 +419,39 @@ export function SettingsModal({ open, onClose }) {
         </section>
 
         {/* ------------------------------------------------------ Sauvegardes */}
+        <section className="settings-section">
+          <h3 className="settings-section__title">
+            <Icon name="bell" size={16} /> Rappels des tâches
+          </h3>
+          <div className="settings-io">
+            <div>
+              <h4>{settings.taskRemindersEnabled ? 'Rappels activés' : 'Ne manquez plus une échéance'}</h4>
+              <p>
+                Notification à 9 h le jour de l’échéance. StudyFlow doit rester ouverte pour vérifier les tâches à rappeler.
+              </p>
+            </div>
+            <div className="settings-io__actions">
+              {settings.taskRemindersEnabled ? (
+                <button
+                  type="button"
+                  className="btn btn--ghost btn--sm"
+                  onClick={() => actions.updateSettings({ taskRemindersEnabled: false })}
+                >
+                  Désactiver
+                </button>
+              ) : notificationPermission === 'unsupported' ? (
+                <span className="form__notice">Notifications non disponibles</span>
+              ) : notificationPermission === 'denied' ? (
+                <span className="form__notice">Autorisation bloquée dans le navigateur</span>
+              ) : (
+                <button type="button" className="btn btn--primary btn--sm" onClick={handleEnableTaskReminders}>
+                  <Icon name="bell" size={15} /> Activer les rappels
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+
         <section className="settings-section">
           <h3 className="settings-section__title">
             <Icon name="archive" size={16} /> Transférer mes données
