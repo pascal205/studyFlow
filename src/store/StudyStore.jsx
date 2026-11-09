@@ -30,6 +30,7 @@ const cleanTask = (task) => ({
   subjectId: task.subjectId,
   type: task.type || 'devoir',
   dueDate: task.dueDate,
+  dueTime: task.dueTime || '09:00',
   estimatedMinutes: Number(task.estimatedMinutes) || 30,
   difficulty: Number(task.difficulty) || 3,
   status: task.status || 'todo',

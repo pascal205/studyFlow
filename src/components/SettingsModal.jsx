@@ -110,7 +110,7 @@ export function SettingsModal({ open, onClose }) {
       setNotificationPermission(permission)
       if (permission === 'granted') {
         actions.updateSettings({ taskRemindersEnabled: true })
-        setMessage('Rappels activés : les tâches du jour seront signalées à 9 h.')
+        setMessage('Rappels activés : chaque tâche sera signalée à l’heure de son échéance.')
       } else {
         setMessage('Autorisez les notifications de StudyFlow dans les réglages de votre navigateur.')
       }
@@ -427,7 +427,7 @@ export function SettingsModal({ open, onClose }) {
             <div>
               <h4>{settings.taskRemindersEnabled ? 'Rappels activés' : 'Ne manquez plus une échéance'}</h4>
               <p>
-                Notification à 9 h le jour de l’échéance. StudyFlow doit rester ouverte pour vérifier les tâches à rappeler.
+                Notification à l’heure d’échéance définie pour chaque tâche. StudyFlow doit rester ouverte pour vérifier les tâches à rappeler.
               </p>
             </div>
             <div className="settings-io__actions">

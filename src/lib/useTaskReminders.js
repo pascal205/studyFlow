@@ -29,9 +29,10 @@ export function useTaskReminders({ tasks, enabled, userId }) {
 
         const dueTasks = tasks.filter((task) => {
           if (task.status === 'done' || !task.dueDate || task.dueDate > today) return false
-          const reminderId = `${task.id}:${task.dueDate}`
+          const reminderId = `${task.id}:${task.dueDate}:${task.dueTime || '09:00'}`
           if (sent.has(reminderId)) return false
-          if (task.dueDate === today && Date.now() < new Date(`${task.dueDate}T09:00:00`).getTime()) return false
+          const dueTime = task.dueTime || '09:00'
+          if (Date.now() < new Date(`${task.dueDate}T${dueTime}:00`).getTime()) return false
           return true
         })
         if (!dueTasks.length) return
@@ -51,7 +52,7 @@ export function useTaskReminders({ tasks, enabled, userId }) {
         } else {
           new Notification('Rappel StudyFlow', options)
         }
-        dueTasks.forEach((task) => sent.add(`${task.id}:${task.dueDate}`))
+        dueTasks.forEach((task) => sent.add(`${task.id}:${task.dueDate}:${task.dueTime || '09:00'}`))
         try {
           localStorage.setItem(reminderStorageKey(userId), JSON.stringify([...sent].slice(-500)))
         } catch {

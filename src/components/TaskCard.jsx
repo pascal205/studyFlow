@@ -35,6 +35,9 @@ export function TaskCard({ task, onEdit, onDelete, onToggle, onStatusChange }) {
                 <Icon name="calendar" size={14} /> {formatDate(task.dueDate)}
               </span>
               <span className="meta-item">
+                <Icon name="bell" size={14} /> {task.dueTime || '09:00'}
+              </span>
+              <span className="meta-item">
                 <Icon name="clock" size={14} /> {minutesToLabel(task.estimatedMinutes)}
               </span>
             </div>

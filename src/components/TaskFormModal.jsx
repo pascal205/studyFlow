@@ -8,6 +8,7 @@ const empty = () => ({
   subjectId: '',
   type: 'devoir',
   dueDate: todayISO(),
+  dueTime: '09:00',
   estimatedMinutes: 30,
   difficulty: 3,
   status: 'todo',
@@ -22,7 +23,7 @@ export function TaskFormModal({ open, onClose, onSubmit, subjects, initial, defa
     if (!open) return
     setError('')
     if (initial) {
-      setForm({ ...empty(), ...initial })
+      setForm({ ...empty(), ...initial, dueTime: initial.dueTime || '09:00' })
     } else {
       setForm({ ...empty(), subjectId: defaultSubjectId || subjects[0]?.id || '' })
     }
@@ -92,10 +93,15 @@ export function TaskFormModal({ open, onClose, onSubmit, subjects, initial, defa
           </label>
         </div>
 
-        <div className="form__grid">
+        <div className="form__grid form__grid--3">
           <label className="field">
             <span className="field__label">Échéance</span>
             <input type="date" value={form.dueDate} onChange={(event) => update('dueDate', event.target.value)} />
+          </label>
+
+          <label className="field">
+            <span className="field__label">Heure de l’échéance</span>
+            <input type="time" value={form.dueTime} onChange={(event) => update('dueTime', event.target.value)} />
           </label>
 
           <label className="field">
